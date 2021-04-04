@@ -252,17 +252,6 @@ class N_PuzzleSearchProblem():
         """
         return len(actions)
 
-def getSuccessors(self,state):
-    """
-        Returns list of (successor, action, stepCost) pairs where
-        each succesor is either left, right, up, or down
-        from the original state and the cost is 1.0 for each
-    """
-    succ = []
-    for a in state.legalMoves():
-        succ.append((state.result(a), a, 1))
-    return succ
-
 LIST_PUZZLE_DATA = [[1, 0, 2, 3, 4, 5, 6, 7, 8],
                      [1, 7, 8, 2, 3, 4, 5, 6, 0],
                      [4, 3, 2, 7, 0, 5, 1, 6, 8],
