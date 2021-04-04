@@ -296,14 +296,15 @@ def createRandomN_Puzzle(n, moves = 100):
     return puzzle
 
 def main(n, isRandom, moves):
-    print(sys.getrecursionlimit()) # = 1000
+    print("Number Recursion = ", sys.getrecursionlimit()) # = 1000
     sys.setrecursionlimit(12345678) 
 
     if isRandom == False:
         n = 3
         # choose = random.randint(0, 5)
-        choose = 0
-        print("Choose puzzle = ", choose)
+        choose = 1 # Thay đổi chọn puzzle 1 -> đệ quy lâu hơn
+
+        print("Choose puzzle = ", choose, file = sys.stderr)
         problem = N_PuzzleSearchProblem(loadEightPuzzle(choose), n)
     else:
         problem = N_PuzzleSearchProblem(createRandomN_Puzzle(n, moves), n)
