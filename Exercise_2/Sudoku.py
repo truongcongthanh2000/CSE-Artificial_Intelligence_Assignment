@@ -54,5 +54,9 @@ def solver(difficult, file):
             print(given_grid)
             print('------------------------------------')
             print(solution.values)
+    # print(s.given_grid.values)
+    # m ,n = s.given_grid.fill_predetermined()
+    # print("Fill")
+    # print(n.values)
 
-solver(2, "Sudoku_database.json")
+solver(3, "Sudoku_database.json")

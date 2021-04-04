@@ -3,6 +3,7 @@ import random
 import operator
 import math
 from past.builtins import range
+from collections import Counter
 
 
 random.seed()
@@ -159,6 +160,109 @@ class Fixed(Chromosome):
                         return False
         return True
 
+    def fill_predetermined(self):
+        """
+                Fills some predetermined cells of the Sudoku grid using a pencil marking method.
+                Raises:
+                    - Exception: The puzzle is not solvable.
+                """
+        count = 0
+        helper = [[[*range(1, 10)] for x in range(grid_size)] for y in range(grid_size)]
+
+        def pencil_mark(row, col):
+            """
+                        Marks the value of grid[i][j] element in it's row, column and sub-grid.
+                        Parameters:
+                            - i (int): grid row.
+                            - j (int): grid column.
+                        Returns: The more completed version of the grid.
+            """
+
+
+            if self.values[row][col] != 0:
+                helper[row][col] = [self.values[row][col]]
+                # Remove from same row
+                for j in range(grid_size):
+                    if j != col:
+                        if self.values[row][col] in helper[row][j]:
+                            helper[row][j].remove(self.values[row][col])
+
+                # Remove from same column
+                for i in range(grid_size):
+                    if i != row:
+                        if self.values[row][col] in helper[i][col]:
+                            helper[i][col].remove(self.values[row][col])
+
+                # Remove from same subgrid
+                h = self.make_index(row)
+                k = self.make_index(col)
+
+                for i in range(h, h + 3):
+                    for j in range(k, k + 3):
+                        if i != row and j != col:
+                            if self.values[row][col] in helper[i][j]:
+                                helper[i][j].remove(self.values[row][col])
+
+
+        # Next step is after using the pencil mark, fill the value can be predetermined.
+        for i in range(grid_size):
+            for j in range(grid_size):
+                pencil_mark(i, j)
+
+        while True:
+            anything_changed = False
+
+            for i in range(grid_size):
+                for j in range(grid_size):
+                    if self.values[i][j] == 0:
+                        if len(helper[i][j]) == 0:
+                            raise Exception('The puzzle is not solvable.')
+                        elif len(helper[i][j]) == 1:
+                            count += 1
+                            self.values[i][j] = helper[i][j][0]
+                            pencil_mark(i, j)
+                            anything_changed = True
+                        else:
+                            check = []
+
+                            # Traverse along with row
+                            for k in range(grid_size):
+                                if len(helper[i][k]) > 1:
+                                    check += helper[i][k]
+
+                            # Traverse along with column
+                            for k in range(grid_size):
+                                if len(helper[k][j]) > 1:
+                                    check += helper[k][j]
+
+                            # Traverse along with subgrid
+                            x_grid = self.make_index(i)
+                            y_grid = self.make_index(j)
+
+                            for x in range(x_grid, x_grid + 3):
+                                for y in range(y_grid, y_grid + 3):
+                                    if len(helper[x][y]) > 1:
+                                        check += helper[x][y]
+
+                            counter = Counter(check)
+
+                            lst = sorted(counter.most_common(), key=lambda val: val[1])
+                            if int(lst[0][1]) == 1:
+                                key = int(lst[0][0])
+                                if key in helper[i][j]:
+                                    count += 1
+                                    self.values[i][j] = key
+                                    pencil_mark(i, j)
+                                    anything_changed = True
+
+
+            if not anything_changed:
+                break
+        print("Fill ", count, "-> Good luck")
+        return Fixed(self.values), Fixed(helper)
+
+
+
 class Population(object):
     """ A set of chromosome solutions to the Sudoku puzzle."""
     def __init__(self):
@@ -172,21 +276,22 @@ class Population(object):
         self.chromosomes = []
 
         # Determine the legal values that each square can take.
-        helper = Chromosome()
+        # helper = Chromosome()
 
-        helper.values = [[[] for j in range(0, grid_size)] for i in range(0, grid_size)]
+        # helper.values = [[[] for j in range(0, grid_size)] for i in range(0, grid_size)]
+        given_grid, helper = given_grid.fill_predetermined()
 
-        for row in range(grid_size):
-            for col in range(grid_size):
-                for value in range(1, 10):
-                    if given_grid.values[row][col] == 0 and \
-                        not (given_grid.is_column_duplicate(col, value) \
-                             or given_grid.is_subgrid_duplicate(row, col, value) \
-                             or given_grid.is_row_duplicate(row, value)):
-                        helper.values[row][col].append(value)
-                    elif given_grid.values[row][col] != 0:
-                        helper.values[row][col].append(given_grid.values[row][col])
-                        break
+        # for row in range(grid_size):
+        #     for col in range(grid_size):
+        #         for value in range(1, 10):
+        #             if given_grid.values[row][col] == 0 and \
+        #                 not (given_grid.is_column_duplicate(col, value) \
+        #                      or given_grid.is_subgrid_duplicate(row, col, value) \
+        #                      or given_grid.is_row_duplicate(row, value)):
+        #                 helper.values[row][col].append(value)
+        #             elif given_grid.values[row][col] != 0:
+        #                 helper.values[row][col].append(given_grid.values[row][col])
+        #                 break
         # Generate a population
         for p in range(0, population_size):
             g = Chromosome()
@@ -378,8 +483,91 @@ class Sinusoidal_Motion_Crossover(Crossover):
         return
 
     def crossover(self, parent1, parent2, crossover_rate):
-        pass
+        """ Create two new child candidates by crossing over parent genes. """
+        child1 = Chromosome()
+        child2 = Chromosome()
 
+        # Make a copy of the parent genes.
+        child1.values = np.copy(parent1.values)
+        child2.values = np.copy(parent2.values)
+
+        r = random.uniform(0, 1.1)
+        while (r > 1):  # Outside [0, 1] boundary. Choose another.
+            r = random.uniform(0, 1.1)
+
+        # Perform crossover.
+        if (r < crossover_rate):
+            # Pick a crossover point. Crossover must have at least 1 row (and at most Nd-1) rows.
+            crossover_point1 = random.randint(0, 8)
+            crossover_point2 = random.randint(1, 9)
+            while (crossover_point1 == crossover_point2):
+                crossover_point1 = random.randint(0, 8)
+                crossover_point2 = random.randint(1, 9)
+
+            if (crossover_point1 > crossover_point2):
+                temp = crossover_point1
+                crossover_point1 = crossover_point2
+                crossover_point2 = temp
+
+            for i in range(crossover_point1, crossover_point2):
+                child1.values[i], child2.values[i] = self.crossover_rows(child1.values[i], child2.values[i])
+            # row = random.randint(0, 8)
+            # child1.values[row], child2.values[row] = self.crossover_rows(child1.values[row], child2.values[row])
+        return child1, child2
+
+    def crossover_rows(self, row1, row2):
+
+        size = grid_size
+
+        child1_row = [0 for i in range(size)]
+        child2_row = [0 for i in range(size)]
+
+        index1 = 0  # Availabel index of child1
+        index2 = 0  # Availabel index of child2
+        current = 0  # Current index to traverse
+        begin = True
+        while (0 in child1_row) or (0 in child2_row):
+            # i, ii
+            if begin == True:
+                child1_row[index1] = row1[current]
+                index1 += 1
+                begin = False
+
+            # iii
+            next = row2[current]
+
+            # iv
+            if next not in child1_row:
+                # v
+                child1_row[index1] = next
+                index1 += 1
+            else:
+                # vi
+                child2_row[index2] = next
+                index2 += 1
+
+            # vii
+            if index2 == size:
+                # xii
+                # print("Child 1: ", child1_row)
+                # print("Child 2: ", child2_row)
+                break
+            else:
+                # viii
+                current += 1
+                next = row1[current]
+
+                # ix
+                if next in child1_row:
+                    # xi
+                    child2_row[index2] = next
+                    index2 += 1
+                else:
+                    # x
+                    child1_row[index1] = next
+                    index1 += 1
+
+        return child1_row, child2_row
 
 
 class Sudoku(object):
@@ -453,8 +641,13 @@ class Sudoku(object):
                 parent2 = t.compete(self.population.chromosomes)
 
                 # Crossover
-                cr = CycleCrossover()
-                child1, child2 = cr.crossover(parent1, parent2, crossover_rate=1.0)
+                change = random.randint(0,9)
+                if change != 6:
+                    cr = CycleCrossover()
+                    child1, child2 = cr.crossover(parent1, parent2, crossover_rate=1.0)
+                else:
+                    cr = Sinusoidal_Motion_Crossover()
+                    child1, child2 = cr.crossover(parent1, parent2, crossover_rate=1.0)
 
                 # Mutate child1
                 child1.update_fitness()
