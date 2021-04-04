@@ -12,11 +12,12 @@ random.seed()
 # each chromosome: 9 row - 9 gene
 
 grid_size = 9 # Number of element in row, column or subgird
+epsilon = 1e-5
 
 class Chromosome(object):
     """ A chromosome for a sudoku puzzle"""
 
-    def __int__(self):
+    def __init__(self):
         self.values = np.zeros((grid_size, grid_size))
         self.fitness = 0
 
@@ -29,6 +30,8 @@ class Chromosome(object):
         subgrid_count = np.zeros(grid_size)
         column_fitness_sum = 0.0
         subgrid_fitness_sum = 0.0
+
+        self.values = self.values.astype(int) # Change to int type because of slice :
 
         for column in range(grid_size):
             for row in range(grid_size):
@@ -52,13 +55,13 @@ class Chromosome(object):
                 subgrid_count[self.values[i+1][j+2] - 1] += 1
                 subgrid_count[self.values[i+2][j+2] - 1] += 1
 
-            for k in range(grid_size):
-                if subgrid_count[k] == 1:
-                    subgrid_fitness_sum += (1.0/grid_size)/grid_size
+                for k in range(grid_size):
+                    if subgrid_count[k] == 1:
+                        subgrid_fitness_sum += (1.0/grid_size)/grid_size
 
-            subgrid_count = np.zeros(grid_size) #Reset
+                subgrid_count = np.zeros(grid_size) #Reset
 
-        if column_fitness_sum == 1.0 and subgrid_fitness_sum == 1.0:
+        if (abs(column_fitness_sum - 1.0) < epsilon) and (abs(subgrid_fitness_sum - 1.0) < epsilon):
             fitness = 1.0
         else:
             fitness = column_fitness_sum * subgrid_fitness_sum
@@ -87,7 +90,7 @@ class Chromosome(object):
 
                 from_column, to_column = random_column[0], random_column[1]
 
-                if given_grid[row][from_column] == 0 and given_grid[row][to_column] == 0:
+                if given_grid.values[row][from_column] == 0 and given_grid.values[row][to_column] == 0:
                     if not given_grid.is_column_duplicate(to_column, self.values[row][from_column])  \
                         and not given_grid.is_column_duplicate(from_column, self.values[row][to_column]) \
                         and not given_grid.is_subgrid_duplicate(row, to_column, self.values[row][from_column]) \
@@ -103,8 +106,9 @@ class Chromosome(object):
 
 class Fixed(Chromosome):
 
-    def __int__(self, values):
+    def __init__(self, values):
         self.values = values
+        return
 
     def is_row_duplicate(self, row, value):
         """ Check duplicate in a row. """
@@ -157,14 +161,14 @@ class Fixed(Chromosome):
 
 class Population(object):
     """ A set of chromosome solutions to the Sudoku puzzle."""
-    def __int__(self):
+    def __init__(self):
         self.chromosomes = []
 
 
     """
         Generate the population
     """
-    def generate_chromosome(self, population_size, given_grid):
+    def generate_chromosomes(self, population_size, given_grid):
         self.chromosomes = []
 
         # Determine the legal values that each square can take.
@@ -173,17 +177,16 @@ class Population(object):
         helper.values = [[[] for j in range(0, grid_size)] for i in range(0, grid_size)]
 
         for row in range(grid_size):
-            for col in random(grid_size):
+            for col in range(grid_size):
                 for value in range(1, 10):
-                    if given_grid[row][col] != 0 and \
+                    if given_grid.values[row][col] == 0 and \
                         not (given_grid.is_column_duplicate(col, value) \
-                             or given_grid.is_block_duplicate(row, col, value) \
+                             or given_grid.is_subgrid_duplicate(row, col, value) \
                              or given_grid.is_row_duplicate(row, value)):
                         helper.values[row][col].append(value)
-                    elif given_grid[row][col] != 0:
-                        helper.values[row][col].append(given_grid[row][col])
+                    elif given_grid.values[row][col] != 0:
+                        helper.values[row][col].append(given_grid.values[row][col])
                         break
-
         # Generate a population
         for p in range(0, population_size):
             g = Chromosome()
@@ -216,7 +219,9 @@ class Population(object):
             self.chromosomes.append(g)
             # print(self.chromosomes[0])
             # Compute the fitness of all chromosome in the population.
+
         self.update_fitness()
+
 
         # print("Seeding complete.")
 
@@ -376,4 +381,144 @@ class Sinusoidal_Motion_Crossover(Crossover):
         pass
 
 
+
+class Sudoku(object):
+    """ Solves a given Sudoku puzzle using a genetic algorithm. """
+
+    def __init__(self):
+        self.population = None
+        self.given_grid = None
+
+    def load_data(self, given):
+        self.given_grid = Fixed(given)
+        return
+
+    def solve(self):
+        self.population = None
+        population_size = 1000                          # Population size
+        num_elites = int(0.05 * population_size)        # Number of elites
+        num_generations = 10000                         # Number of generations
+        num_mutations = 0                               # Number of mutations
+
+        # Mutation parameter
+        phi = 0
+        sigma = 1
+        mutation_rate = 0.06
+
+        # Check given_grid one first
+        if self.given_grid.no_duplicate() == False:
+            return (-1, 1)
+
+        # Create an initial population
+        self.population = Population()
+        print("create an initial population.")
+
+        if self.population.generate_chromosomes(population_size, self.given_grid) == 1:
+            pass
+        else:
+            return (-1, 1)
+
+        # For up to 10000 generations...
+        stale = 0
+        for generation in range(num_generations):
+            # Check for a solution
+            best_fitness = 0.0
+            for c in range(population_size):
+                fitness = self.population.chromosomes[c].fitness
+                if fitness == 1:
+                    print("Solution found at generation %d!" % generation)
+                    return (generation, self.population.chromosomes[c])
+
+                if fitness > best_fitness:
+                    best_fitness = fitness
+
+            print("Generation:", generation, " Best fitness:", best_fitness)
+
+            # Create the next population.
+            next_population = []
+
+            # Select elites (the fittest candidates) and preserve them for the next generation.
+            self.population.sort()
+            elites = []
+            for i in range(num_elites):
+                elite = Chromosome()
+                elite.values = np.copy(self.population.chromosomes[i].values)
+                elites.append(elite)
+
+            # Create the rest of chromosomes
+            for count in range(num_elites, population_size, 2):
+                # Select parents from population via a tournament.
+                t = Tournament()
+                parent1 = t.compete(self.population.chromosomes)
+                parent2 = t.compete(self.population.chromosomes)
+
+                # Crossover
+                cr = CycleCrossover()
+                child1, child2 = cr.crossover(parent1, parent2, crossover_rate=1.0)
+
+                # Mutate child1
+                child1.update_fitness()
+                old_fitness = child1.fitness
+                success = child1.mutate(mutation_rate, self.given_grid)
+                child1.update_fitness()
+                if success:
+                    num_mutations += 1
+                    if child1.fitness > old_fitness: # Used to calculate the relative success rate of mutations.
+                        phi = phi + 1
+
+                # Mutate child2.
+                child2.update_fitness()
+                old_fitness = child2.fitness
+                success = child2.mutate(mutation_rate, self.given_grid)
+                child2.update_fitness()
+                if success:
+                    num_mutations += 1
+                    if child2.fitness > old_fitness:  # Used to calculate the relative success rate of mutations.
+                        phi = phi + 1
+
+
+                next_population.append(child1)
+                next_population.append(child2)
+
+            # Append elites onto the end of the population. These will not have been affected by crossover or mutation.
+            for e in range(0, num_elites):
+                next_population.append(elites[e])
+
+            # Select next generation.
+            self.population.chromosomes = next_population
+            self.population.update_fitness()
+
+            # Calculate new adaptive mutation rate (based on Rechenberg's 1/5 success rule).
+            # This is to stop too much mutation as the fitness progresses towards unity.
+            if num_mutations == 0:
+                phi = 0  # Avoid divide by zero.
+            else:
+                phi = phi / num_mutations
+
+            if phi > 0.2:
+                sigma = sigma / 0.998
+            elif phi < 0.2:
+                sigma = sigma * 0.998
+
+            mutation_rate = abs(np.random.normal(loc=0.0, scale=sigma, size=None))
+
+            # Check for stale population.
+            self.population.sort()
+            if self.population.chromosomes[0].fitness != self.population.chromosomes[1].fitness:
+                stale = 0
+            else:
+                stale += 1
+
+            # Re-seed the population if 100 generations have passed
+            # with the fittest two candidates always having the same fitness.
+            if (stale >= 100):
+                print("The population has gone stale. Re-seeding...")
+                self.population.generate_chromosomes(population_size, self.given_grid)
+                stale = 0
+                sigma = 1
+                phi = 0
+                mutation_rate = 0.06
+
+        print("No solution found.")
+        return (-2, 1)
 
