@@ -272,26 +272,27 @@ class Population(object):
     """
         Generate the population
     """
-    def generate_chromosomes(self, population_size, given_grid):
+    def generate_chromosomes(self, population_size, given_grid, fill_pre = False):
         self.chromosomes = []
 
         # Determine the legal values that each square can take.
-        # helper = Chromosome()
+        helper = Chromosome()
 
-        # helper.values = [[[] for j in range(0, grid_size)] for i in range(0, grid_size)]
-        given_grid, helper = given_grid.fill_predetermined()
-
-        # for row in range(grid_size):
-        #     for col in range(grid_size):
-        #         for value in range(1, 10):
-        #             if given_grid.values[row][col] == 0 and \
-        #                 not (given_grid.is_column_duplicate(col, value) \
-        #                      or given_grid.is_subgrid_duplicate(row, col, value) \
-        #                      or given_grid.is_row_duplicate(row, value)):
-        #                 helper.values[row][col].append(value)
-        #             elif given_grid.values[row][col] != 0:
-        #                 helper.values[row][col].append(given_grid.values[row][col])
-        #                 break
+        if fill_pre == True:
+            given_grid, helper = given_grid.fill_predetermined() # Overlap, change in next version.
+        else:
+            helper.values = [[[] for j in range(0, grid_size)] for i in range(0, grid_size)]
+            for row in range(grid_size):
+                for col in range(grid_size):
+                    for value in range(1, 10):
+                        if given_grid.values[row][col] == 0 and \
+                            not (given_grid.is_column_duplicate(col, value) \
+                                 or given_grid.is_subgrid_duplicate(row, col, value) \
+                                 or given_grid.is_row_duplicate(row, value)):
+                            helper.values[row][col].append(value)
+                        elif given_grid.values[row][col] != 0:
+                            helper.values[row][col].append(given_grid.values[row][col])
+                            break
         # Generate a population
         for p in range(0, population_size):
             g = Chromosome()
@@ -581,7 +582,10 @@ class Sudoku(object):
         self.given_grid = Fixed(given)
         return
 
-    def solve(self):
+    """
+        fill_pre: Check that function call the fill_predetermined function.
+    """
+    def solve(self, fill_pre):
         self.population = None
         population_size = 1000                          # Population size
         num_elites = int(0.05 * population_size)        # Number of elites
@@ -601,7 +605,7 @@ class Sudoku(object):
         self.population = Population()
         print("create an initial population.")
 
-        if self.population.generate_chromosomes(population_size, self.given_grid) == 1:
+        if self.population.generate_chromosomes(population_size, self.given_grid, fill_pre=fill_pre) == 1:
             pass
         else:
             return (-1, 1)
