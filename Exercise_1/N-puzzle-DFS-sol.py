@@ -204,6 +204,7 @@ class N_PuzzleSearchProblem():
         self.n = n
         self.MapPuzzle = N_PuzzleStorage()
         self.list_action = []
+        self.n_DFS = 0
 
     def getStartState(self):
         return self.puzzle
@@ -212,21 +213,24 @@ class N_PuzzleSearchProblem():
         return state.isGoal()
 
     def DFS(self, state):
-        # print("DFS = ")
+        self.n_DFS += 1
+        # print("DFS = ", self.n_DFS)
         # print(state)
         self.MapPuzzle.add(state)
         if self.isGoalState(state):
             return True
 
-        for a in state.legalMoves():
-            # print(a)
-            successor = state.result(a)
-            # print(successor)
-            if self.MapPuzzle.isVisit(successor) == False:
-                self.list_action.append(a)
-                if self.DFS(successor):
-                    return True
-                self.list_action.pop()
+        if self.n_DFS < 3500: # Magic!
+            for a in state.legalMoves():
+                # print(a)
+                successor = state.result(a)
+                # print(successor)
+                if self.MapPuzzle.isVisit(successor) == False:
+                    self.list_action.append(a)
+                    if self.DFS(successor):
+                        return True
+                    self.list_action.pop()
+        self.n_DFS -= 1
         return False
 
     def getSuccessors(self,state):
@@ -279,6 +283,7 @@ def loadEightPuzzle(puzzleNumber):
     """
     puzzle = LIST_PUZZLE_DATA[puzzleNumber]
     n = int(math.sqrt(len(puzzle)))
+    print(puzzle, n)
     return N_PuzzleState(puzzle, n)
 
 def createRandomN_Puzzle(n, moves = 100):
