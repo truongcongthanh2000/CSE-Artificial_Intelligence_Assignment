@@ -66,10 +66,10 @@ class N_PuzzleState:
             | 6 | 7 | 8 |
             -------------
 
-        >>> EightPuzzleState([0, 1, 2, 3, 4, 5, 6, 7, 8]).isGoal()
+        >>> N_PuzzleState([0, 1, 2, 3, 4, 5, 6, 7, 8]).isGoal()
         True
 
-        >>> EightPuzzleState([1, 0, 2, 3, 4, 5, 6, 7, 8]).isGoal()
+        >>> N_PuzzleState([1, 0, 2, 3, 4, 5, 6, 7, 8]).isGoal()
         False
         """
         current = 0
@@ -87,7 +87,7 @@ class N_PuzzleState:
         Moves consist of moving the blank space up, down, left or right.
         These are encoded as 'up', 'down', 'left' and 'right' respectively.
 
-        >>> EightPuzzleState([0, 1, 2, 3, 4, 5, 6, 7, 8]).legalMoves()
+        >>> N_PuzzleState([0, 1, 2, 3, 4, 5, 6, 7, 8]).legalMoves()
         ['down', 'right']
         """
         moves = []
@@ -146,8 +146,8 @@ class N_PuzzleState:
             Overloads '==' such that two eightPuzzles with the same configuration
           are equal.
 
-          >>> EightPuzzleState([0, 1, 2, 3, 4, 5, 6, 7, 8]) == \
-              EightPuzzleState([1, 0, 2, 3, 4, 5, 6, 7, 8]).result('left')
+          >>> N_PuzzleState([0, 1, 2, 3, 4, 5, 6, 7, 8]) == \
+              N_PuzzleState([1, 0, 2, 3, 4, 5, 6, 7, 8]).result('left')
           True
         """
         for row in range( self.n ):
