@@ -10,8 +10,9 @@
 
 ## Exercise 1 - N puzzle with DFS
 
-[Code](https://github.com/OnceUponATimeMathley/CSE-Artificial_Intelligence_Assignment_1/blob/master/Exercise_1/N-puzzle-DFS.py)
-### DFS with Recursion
+[Code](https://github.com/OnceUponATimeMathley/CSE-Artificial_Intelligence_Assignment_1/blob/master/Exercise_1/N-puzzle-DFS.py) -> DFS_Recursive(self, state):
+
+### 1. DFS with Recursion
 
 #### Run Code
     # If you want the available input get in LIST_PUZZLE_DATA
@@ -33,4 +34,19 @@
         Thêm dir vào list_action 
         DFS(next_state) 
         Xóa dir ra khỏi list_action
+
+### 2. DFS with no Recursion
+
+[Code](https://github.com/OnceUponATimeMathley/CSE-Artificial_Intelligence_Assignment_1/blob/master/Exercise_1/N-puzzle-DFS.py) -> DFS_noRecursive(self, state):
+
+#### Run Code
+    # If you want the available input get in LIST_PUZZLE_DATA
+    python3 N-puzzle-DFS.py (numRow = 3) noRandom (numMoves) noRecursive 
+    # If you want to generate random data
+    python3 N-puzzle-DFS.py (numRow) Random (numMoves) noRecursive
+
+#### The reason for this algorithm
+    Vì thuật toán đệ quy sẽ sử dụng rất nhiều bộ nhớ của stack mà stack memory của python thì rất nhỏ, cho nên thuật toán sử dụng đệ quy không chạy được do tràn bộ nhớ, vì độ sâu của thuật toán DFS sẽ đi theo hàm giai thừa của N*N. Do đó, chúng ta sẽ dùng phương pháp khử đệ quy để khắc phục điều này.
+
+
 
