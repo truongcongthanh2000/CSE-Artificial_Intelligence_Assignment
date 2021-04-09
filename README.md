@@ -22,18 +22,20 @@
 
 #### Pseudocode
     DFS(state): 
-    # list_action: Lưu trữ các hướng trong lúc đệ quy 
-    # Mục đích dùng để in kết quả 
-    Đánh dấu state đã được duyệt 
-    Nếu state là trạng thái kết thúc: 
-        in kết quả theo list_action và dừng 
-    Duyệt các hướng(dir) có thể trong LegalMoves(state): 
-        # Trạng thái mới khi đi theo hướng (dir) 
+    # list_action: Storing list direction in recursion
+    # The purpose is to print the results
+
+    Mark the state is visited
+    If state is Goal State: 
+        print result in list_action and break
+    
+    Traverse the possible directions (dir) in LegalMoves(state):
+        # Next state when going in the direction (dir)
         next_state = result(state, dir) 
-        Nếu next_state chưa được duyêt: 
-        Thêm dir vào list_action 
-        DFS(next_state) 
-        Xóa dir ra khỏi list_action
+        if next_state is not visited
+            push dir in list_action
+            DFS(next_state) # Recursive next_state
+            pop dir in list_action # Backtracking
 
 ### 2. DFS with no Recursion
 
@@ -46,9 +48,9 @@
     python3 N-puzzle-DFS.py (numRow) Random (numMoves) noRecursive
 
 #### The reason for this algorithm
-    Vì thuật toán đệ quy sẽ sử dụng rất nhiều bộ nhớ của stack mà stack memory của python thì rất nhỏ, 
-    cho nên thuật toán sử dụng đệ quy không chạy được do tràn bộ nhớ, vì độ sâu của thuật toán DFS sẽ 
-    đi theo hàm giai thừa của N*N. Do đó, chúng ta sẽ dùng phương pháp khử đệ quy để khắc phục điều này.
+    Since the recursive algorithm uses a lot of stack memory, python's stack memory is very small,    
+    so the algorithm using recursion fails due to memory overflow, because the depth of the DFS algorithm will
+    follows the factorial function of N * N. Hence, we will use recursive elimination to fix this.
 
 
 
