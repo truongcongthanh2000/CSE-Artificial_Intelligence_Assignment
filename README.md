@@ -46,7 +46,9 @@
     python3 N-puzzle-DFS.py (numRow) Random (numMoves) noRecursive
 
 #### The reason for this algorithm
-    Vì thuật toán đệ quy sẽ sử dụng rất nhiều bộ nhớ của stack mà stack memory của python thì rất nhỏ, cho nên thuật toán sử dụng đệ quy không chạy được do tràn bộ nhớ, vì độ sâu của thuật toán DFS sẽ đi theo hàm giai thừa của N*N. Do đó, chúng ta sẽ dùng phương pháp khử đệ quy để khắc phục điều này.
+    Vì thuật toán đệ quy sẽ sử dụng rất nhiều bộ nhớ của stack mà stack memory của python thì rất nhỏ, 
+    cho nên thuật toán sử dụng đệ quy không chạy được do tràn bộ nhớ, vì độ sâu của thuật toán DFS sẽ 
+    đi theo hàm giai thừa của N*N. Do đó, chúng ta sẽ dùng phương pháp khử đệ quy để khắc phục điều này.
 
 
 
