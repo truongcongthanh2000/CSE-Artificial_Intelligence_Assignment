@@ -8,4 +8,4 @@
 |Vũ Minh Dương|1810885|
 |Lê Long ||1812881|
 
-
+## Exercise 1 - N puzzle with DFS
