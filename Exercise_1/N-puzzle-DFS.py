@@ -7,8 +7,8 @@ import numpy as np
 import random
 
 # 2 way to run code:
-# python N-puzzle-DFS-sol.py (numRow) noRandom (numMoves) ('Recursive', 'noRecursive')
-# python N-puzzle-DFS-sol.py (numRow) Random (numMoves) ('Recursive', 'noRecursive')
+# python N-puzzle-DFS.py (numRow) noRandom (numMoves) ('Recursive', 'noRecursive')
+# python N-puzzle-DFS.py (numRow) Random (numMoves) ('Recursive', 'noRecursive')
 # best Solution: Choose noRecursive to avoid use lot of memory
 
 class N_PuzzleState:
