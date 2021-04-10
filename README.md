@@ -24,7 +24,7 @@
     DFS(state): 
     # list_action: Storing list direction in recursion
     # The purpose is to print the results
-
+    
     Mark the state is visited
     If state is Goal State: 
         print result in list_action and break
@@ -51,6 +51,58 @@
     Since the recursive algorithm uses a lot of stack memory, python's stack memory is very small,    
     so the algorithm using recursion fails due to memory overflow, because the depth of the DFS algorithm will
     follows the factorial function of N * N. Hence, we will use recursive elimination to fix this.
+
+## Exercise 2 - Genetic Algorithm For Sudoku
+
+[Code](https://github.com/OnceUponATimeMathley/CSE-Artificial_Intelligence_Assignment_1/tree/master/Exercise_2): Genetic_Algorithm_Sudoku.py, Sudoku.py, Sudoku_database.json
+
+#### Run code
+
+```
+python Sudoku.py
+```
+
+### GUI
+
+```
+1. Fill-predetermined button: Using pencil marking strategy before solving.
+2. Solve button: Solving the problem.
+3. Reset button: Reset the GUI. Willing to solve another problem.
+4. There are 4 mode in order to create initial state of Sudoku.
+	a, Easy mode.
+	b, Medium mode.
+	c, Hard mode.
+	d, Expert mode.
+```
+
+## Exercise 3 - A* Finding Algorithm
+
+[Code](https://github.com/OnceUponATimeMathley/CSE-Artificial_Intelligence_Assignment_1/tree/master/Exercise_1): A-star.py utils.py
+
+### Run code
+
+```python
+python A-star.py
+```
+
+### GUI
+
+```
+* By click the left mouse button, we can:
+	1. Select start cell: orange color
+	2. Select goal cell: blue color
+	3. Draw to wall: black color
+	4. Change the step cost (default: 1 to 5), click 1 button (has ! notation), and draw
+	changed cell with step cost: 5: yellow color
+	5. Back to default mode, click button 2 (has @ notation).
+* By click the right mouse button, we can:
+	1. Change the current cell to begin state: white color
+* After we has start and goal, other configuration cell, please use space bar to find the path.
+* The reset mode will be update in next version, we apologize for the inconvenience.
+
+```
+
+
 
 
 
