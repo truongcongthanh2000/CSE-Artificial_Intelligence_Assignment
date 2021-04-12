@@ -390,8 +390,9 @@ def main(n, isRandom, moves, isRecursive):
 
     if isRandom == False:
         n = 3
-        choose = random.randint(0, 5)
-        # choose = 1 # Thay đổi chọn puzzle 1 -> đệ quy lâu hơn
+        # choose = random.randint(0, 5)
+        
+        choose = 1 # Thay đổi chọn puzzle 1 -> đệ quy lâu hơn
 
         print("Choose puzzle = ", choose, file = sys.stderr)
         problem = N_PuzzleSearchProblem(loadEightPuzzle(choose), n)
