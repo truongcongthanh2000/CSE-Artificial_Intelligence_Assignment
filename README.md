@@ -14,8 +14,8 @@
 - Exercise 2 - Genetic Algorithm For Sudoku
 - Exercise 3 - A* Finding Path Algorithm
 
-[souce code]()
+[souce code](https://github.com/truongcongthanh2000/CSE-Artificial_Intelligence_Assignment/tree/master/Assignment%201)
 
 ## Assignment 2
 
-[souce code]()
+[souce code](https://github.com/truongcongthanh2000/CSE-Artificial_Intelligence_Assignment/tree/master/Assignment%202)

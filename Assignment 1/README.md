@@ -1,4 +1,4 @@
-# Artificial_Intelligence Assignment_1 HCMUT Semester 202
+# Artificial_Intelligence Assignment-1 HCMUT Semester 202
 
 ## Member in Team
 |NAME|ID Student|
@@ -101,8 +101,3 @@ python A-star.py
 * The reset mode will be update in next version, we apologize for the inconvenience.
 
 ```
-
-
-
-
-
