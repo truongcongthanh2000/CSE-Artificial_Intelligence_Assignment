@@ -101,7 +101,7 @@ def main():
     PlayRound = 0
 
     print("Init Board", _boardState)
-    while timeit.default_timer() - startTime < 3.0 and _boardState.isGoal() == False:
+    while timeit.default_timer() - startTime < 3.0 and _boardState.isGoal() == 0:
         PlayRound += 1
         print("Round", PlayRound)
         (start, end) = move(_boardState.board, player)

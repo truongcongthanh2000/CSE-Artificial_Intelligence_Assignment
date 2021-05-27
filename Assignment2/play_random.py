@@ -11,7 +11,11 @@ from boardState import BoardState
 
 def move(board, player):
     _boardState = BoardState(board)
+    if _boardState.isGoal():
+        return None
     canMove = _boardState.listCells_CanMove(player)
+    if len(canMove) == 0:
+        return None
     cell = random.choice(canMove)
     move = random.choice(_boardState.legalMoves(cell[0], cell[1]))
     row, col = cell[0], cell[1]
