@@ -47,7 +47,7 @@ def move(board, player):
     else:
         raise "Illegal Move"
 
-    start = (row, col)
-    end = (newrow, newcol)
+    start = (4 - row, col)
+    end = (4 - newrow, newcol)
 
     return (start, end)

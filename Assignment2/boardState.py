@@ -87,7 +87,7 @@ class BoardState:
         return moves
 
     def updatePlayer(self, currentPlayer, cost):
-        if currentPlayer == -1:
+        if currentPlayer == 1:
             self.numPlayer2 += cost
             self.numPlayer1 -= cost
         else:
