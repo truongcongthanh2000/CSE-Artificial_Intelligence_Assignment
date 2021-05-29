@@ -1,12 +1,22 @@
 from hashlib import new
+import math
 
+INITIAL_BOARD = [
+    [1,   1,   1,   1,   1],
+    [1,   0,   0,   0,   1],
+    [1,   0,   0,   0,  -1],
+    [-1,  0,   0,   0,  -1],
+    [-1, -1,  -1,  -1,  -1]
+]
+
+INF = math.inf
 
 class BoardState:
     """
     This class defines the mechanics of the Board itself.
     """
 
-    def __init__(self, board, n = 5):
+    def __init__(self, board = INITIAL_BOARD, n = 5):
         """
           Constructs a new board state from an ordering of numbers.
 
@@ -23,6 +33,14 @@ class BoardState:
                     self.numPlayer1 += 1
                 if self.board[i][j] == 1:
                     self.numPlayer2 += 1
+
+    def __getitem__(self, item):
+        print(item)
+        print(type(item))
+        if isinstance(item, int):
+            return item
+        print(item)
+        return 1
 
     def isGoal( self ):
         """
@@ -50,6 +68,17 @@ class BoardState:
         # if d_n1:
         #     return -1
         # return 1
+
+    def evaluate(self, player):
+        if self.isGoal() != 0:
+            if player != self.isGoal():
+                return INF
+            else:
+                return -INF
+        if player == -1:
+            return self.numPlayer1 - self.numPlayer2
+        else:
+            return self.numPlayer2 - self.numPlayer1
 
     def legalMoves( self, row, col):
         """
@@ -93,34 +122,31 @@ class BoardState:
         else:
             self.numPlayer1 += cost
             self.numPlayer2 -= cost
+    
+    def pair_otherCell(self, row, col):
+        ans = []
+        if row > 0 and row < self.n - 1:
+            ans.append([(row - 1, col), (row + 1, col)])
+        if col > 0 and col < self.n - 1:
+            ans.append([(row, col - 1), (row, col + 1)])
+        if (row + col) % 2 == 0:
+            if row > 0 and row < self.n - 1 and col > 0 and col < self.n - 1:
+                ans.append([(row - 1, col - 1), (row + 1, col + 1)])
+                ans.append([(row - 1, col + 1), (row + 1, col - 1)])
+        return ans
 
     def ganh(self, row, col):
         player = self.board[row][col] # current player
         assert player != 0, "player failed in ganh with cell(" + str(row) + ", " + str(col) + ")"
-        if row > 0 and row < self.n - 1:
-            if self.board[row - 1][col] * (-1) == player and self.board[row + 1][col] * (-1) == player:
-                self.board[row - 1][col] = player
-                self.board[row + 1][col] = player
+
+        list_pairOtherCell = self.pair_otherCell(row, col)
+        for pair in list_pairOtherCell:
+            left = pair[0]
+            right = pair[1]
+            if self.board[left[0]][left[1]] * (-1) == player and self.board[right[0]][right[1]] * (-1) == player:
+                self.board[left[0]][left[1]] = player
+                self.board[right[0]][right[1]] = player
                 self.updatePlayer(player, 2)
-
-        if col > 0 and col < self.n - 1:
-            if self.board[row][col - 1] * (-1) == player and self.board[row][col + 1] * (-1) == player:
-                self.board[row][col - 1] = player
-                self.board[row][col + 1] = player
-                self.updatePlayer(player, 2)
-
-        if (row + col) % 2 == 0:
-            if row > 0 and row < self.n - 1 and col > 0 and col < self.n - 1:
-                if self.board[row - 1][col - 1] * (-1) == player and self.board[row + 1][col + 1] * (-1) == player:
-                    self.board[row - 1][col - 1] = player
-                    self.board[row + 1][col + 1] = player
-                    self.updatePlayer(player, 2)
-
-
-                if self.board[row - 1][col + 1] * (-1) == player and self.board[row + 1][col - 1] * (-1) == player:
-                    self.board[row - 1][col + 1] = player
-                    self.board[row + 1][col - 1] = player
-                    self.updatePlayer(player, 2)
 
     def chet(self, row, col):
         player = self.board[row][col] # current player
@@ -177,24 +203,7 @@ class BoardState:
         newBoard.chet(newrow, newcol)
         return newBoard
 
-
-    def result(self, row, col, move):
-        """
-          Returns a new boardState with the current state and cell(row, col)
-        updated based on the provided move.
-
-        The move should be a string drawn from a list returned by legalMoves.
-        Illegal moves will raise an exception, which may be an array bounds
-        exception.
-
-        NOTE: This function *does not* change the current object.  Instead,
-        it returns a new object.
-        -------------
-        | 7 | 0 | 1 |
-        | 6 | x | 2 |
-        | 5 | 4 | 3 |
-        -------------
-        """
+    def updateCell(self, row, col, move):
         if(move == 0):
             newrow = row - 1
             newcol = col
@@ -221,19 +230,66 @@ class BoardState:
             newcol = col - 1
         else:
             raise "Illegal Move"
+        return (newrow, newcol)
 
+    def result(self, row, col, move):
+        """
+          Returns a new boardState with the current state and cell(row, col)
+        updated based on the provided move.
+
+        The move should be a string drawn from a list returned by legalMoves.
+        Illegal moves will raise an exception, which may be an array bounds
+        exception.
+
+        NOTE: This function *does not* change the current object.  Instead,
+        it returns a new object.
+        -------------
+        | 7 | 0 | 1 |
+        | 6 | x | 2 |
+        | 5 | 4 | 3 |
+        -------------
+        """
         start = (row, col)
-        end = (newrow, newcol)
+        end = self.updateCell(row, col, move)
 
         return self.change(start, end)
 
-    def listCells_CanMove(self, player):
+    def listCells_canMove_withoutBay(self, player):
         canMove = []
         for row in range(self.n):
             for col in range(self.n):
-                if self.board[row][col] == player and len(self.legalMoves(row, col)) > 0: # not Empty
-                    canMove.append([row, col])
+                if self.board[row][col] == player:
+                    list_dir = self.legalMoves(row, col)
+                    for dir in list_dir:
+                        canMove.append([row, col, dir])
         return canMove
+
+    def listCells_CanMove(self, player, pre_Board : "BoardState", last_move):
+        if len(last_move) == 2 and last_move[0] != last_move[1] and pre_Board.numPlayer1 == self.numPlayer1 and pre_Board.numPlayer2 == self.numPlayer2:
+            position_open = last_move[0] # vi tri mo ? 
+            canMove = []
+            listBay = []
+            for row in range(self.n):
+                for col in range(self.n):
+                    if self.board[row][col] == player: 
+                        list_dir = self.legalMoves(row, col)
+                        for dir in list_dir:
+                            (newrow, newcol) = self.updateCell(row, col, dir)
+                            if newrow == position_open[0] and newcol == position_open[1]:
+                                list_pairOtherSide = self.pair_otherCell(newrow, newcol)
+                                for [left, right] in list_pairOtherSide:
+                                    if left == (row, col) or right == (row, col):
+                                        continue
+                                    if self.board[left[0]][left[1]] * (-1) == player and self.board[right[0]][right[1]] * (-1) == player:
+                                        listBay.append([row, col, dir])
+                                        break
+                            canMove.append([row, col, dir])
+            if len(listBay) > 0:
+                return listBay
+            else:
+                return canMove
+        else:
+            return self.listCells_canMove_withoutBay(player)
 
     # Utilities for comparison and display
     def __eq__(self, other):

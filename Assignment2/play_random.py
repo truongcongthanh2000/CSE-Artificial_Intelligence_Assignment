@@ -9,45 +9,47 @@ from boardState import BoardState
     -------------
 """
 
+TEACHER = -1
+ME = 1
+
+class Player:    
+    def __init__(self, str_name = "me"):
+        if str_name == "me":
+            self.player = 1 # Me
+        else:
+            self.plyer = -1 # Teacher
+        self.preBoard = BoardState()
+    
+    def __str__(self):
+        return self.name
+
+    def move(self, board):
+        _boardSate = BoardState(board)
+        last_move = self.getlast_move(_boardSate)
+        move = _boardSate.listCells_CanMove(self.player, self.preBoard, last_move)
+        if len(move) == 0:
+            return None
+        choose = random.choice(move)
+        row, col, dir = choose[0], choose[1], choose[2]
+        (newrow, newcol) = _boardSate.updateCell(row, col, dir)
+        self.preBoard = BoardState([[0 for j in range(self.n)] for i in range(self.n)], self.n)
+        self.preBoard.board = [values[:] for values in _boardSate.board]
+
+        start = (row, col)
+        end = (newrow, newcol)
+        self.preBoard = self.preBoard.change(start, end)
+        return (start, end)
+
+    def getlast_move(self, boardState : "BoardState"):
+        for row in range(self.preBoard.n):
+            for col in range(self.preBoard.n):
+                if self.preBoard[row][col] != 0 and boardState[(row, col)] == 0:
+                    start = (row, col)
+                if self.preBoard[row][col] == 0 and boardState[(row, col)] != 0:
+                    end = (row, col)
+        return (start, end)
+
+PLAYER = Player("me")
+
 def move(board, player):
-    _boardState = BoardState(board)
-    if _boardState.isGoal():
-        return None
-    canMove = _boardState.listCells_CanMove(player)
-    if len(canMove) == 0:
-        return None
-    cell = random.choice(canMove)
-    move = random.choice(_boardState.legalMoves(cell[0], cell[1]))
-    row, col = cell[0], cell[1]
-
-    if(move == 0):
-        newrow = row - 1
-        newcol = col
-    elif(move == 1):
-        newrow = row - 1
-        newcol = col + 1
-    elif(move == 2):
-        newrow = row
-        newcol = col + 1
-    elif(move == 3):
-        newrow = row + 1
-        newcol = col + 1
-    elif(move == 4):
-        newrow = row + 1
-        newcol = col
-    elif(move == 5):
-        newrow = row + 1
-        newcol = col - 1
-    elif(move == 6):
-        newrow = row
-        newcol = col - 1
-    elif(move == 7):
-        newrow = row - 1
-        newcol = col - 1
-    else:
-        raise "Illegal Move"
-
-    start = (4 - row, col)
-    end = (4 - newrow, newcol)
-
-    return (start, end)
+    return PLAYER.move(board)
