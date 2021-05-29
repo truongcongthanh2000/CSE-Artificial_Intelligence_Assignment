@@ -34,14 +34,6 @@ class BoardState:
                 if self.board[i][j] == 1:
                     self.numPlayer2 += 1
 
-    def __getitem__(self, item):
-        print(item)
-        print(type(item))
-        if isinstance(item, int):
-            return item
-        print(item)
-        return 1
-
     def isGoal( self ):
         """
           Checks to see if the board is in its goal state.
@@ -200,7 +192,7 @@ class BoardState:
         newBoard.board[newrow][newcol] = self.board[row][col]
         
         newBoard.ganh(newrow, newcol)
-        newBoard.chet(newrow, newcol)
+        # newBoard.chet(newrow, newcol)
         return newBoard
 
     def updateCell(self, row, col, move):
@@ -280,8 +272,9 @@ class BoardState:
                                 for [left, right] in list_pairOtherSide:
                                     if left == (row, col) or right == (row, col):
                                         continue
-                                    if self.board[left[0]][left[1]] * (-1) == player and self.board[right[0]][right[1]] * (-1) == player:
+                                    if self.board[left[0]][left[1]] * (-1) == player and self.board[right[0]][right[1]] * (-1) == player:              
                                         listBay.append([row, col, dir])
+                                        print([row, col, dir])
                                         break
                             canMove.append([row, col, dir])
             if len(listBay) > 0:

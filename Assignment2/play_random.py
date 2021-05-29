@@ -9,10 +9,10 @@ from boardState import BoardState
     -------------
 """
 
-TEACHER = -1
-ME = 1
+TEACHER = 1 # Quan O
+ME = -1 # Quan X
 
-class Player:    
+class Player_random:    
     def __init__(self, str_name = "me"):
         if str_name == "me":
             self.player = 1 # Me
@@ -21,18 +21,18 @@ class Player:
         self.preBoard = BoardState()
     
     def __str__(self):
-        return self.name
+        return self.player
 
-    def move(self, board):
+    def move(self, board, player):
         _boardSate = BoardState(board)
         last_move = self.getlast_move(_boardSate)
-        move = _boardSate.listCells_CanMove(self.player, self.preBoard, last_move)
+        move = _boardSate.listCells_CanMove(player, self.preBoard, last_move)
         if len(move) == 0:
             return None
         choose = random.choice(move)
         row, col, dir = choose[0], choose[1], choose[2]
         (newrow, newcol) = _boardSate.updateCell(row, col, dir)
-        self.preBoard = BoardState([[0 for j in range(self.n)] for i in range(self.n)], self.n)
+        self.preBoard = BoardState([[0 for j in range(_boardSate.n)] for i in range(_boardSate.n)], _boardSate.n)
         self.preBoard.board = [values[:] for values in _boardSate.board]
 
         start = (row, col)
@@ -41,15 +41,18 @@ class Player:
         return (start, end)
 
     def getlast_move(self, boardState : "BoardState"):
+        start = (-1, -1)
+        end = (-1, -1)
         for row in range(self.preBoard.n):
             for col in range(self.preBoard.n):
-                if self.preBoard[row][col] != 0 and boardState[(row, col)] == 0:
+                if self.preBoard.board[row][col] != 0 and boardState.board[row][col] == 0:
                     start = (row, col)
-                if self.preBoard[row][col] == 0 and boardState[(row, col)] != 0:
+                if self.preBoard.board[row][col] == 0 and boardState.board[row][col] != 0:
                     end = (row, col)
         return (start, end)
 
-PLAYER = Player("me")
+PLAYER = Player_random("me")
 
-def move(board, player):
-    return PLAYER.move(board)
+def move_random(board, player):
+    print("preBoard = ", PLAYER.preBoard)
+    return PLAYER.move(board, player)
