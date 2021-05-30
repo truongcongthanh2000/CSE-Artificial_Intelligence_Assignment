@@ -102,7 +102,7 @@ class Alpha_Beta:
                 value = self.alpha_beta(depth - 1, newBoard, True, alpha, beta, player * (-1), board, last_move)
                 if value < bestValue:
                     bestValue = value
-                beta = min(alpha, bestValue)
+                beta = min(beta, bestValue)
                 if beta <= alpha or self.TLE():
                     break
             return bestValue
