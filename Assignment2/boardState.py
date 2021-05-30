@@ -257,8 +257,16 @@ class BoardState:
         return canMove
 
     def listCells_CanMove(self, player, pre_Board : "BoardState", last_move):
+        # print("last_move =", last_move)
+        # if player == -1: 
+        #     print("player = O")
+        # else:
+        #     print("player = X")
+        # print("preBoard with numPlayer = ", pre_Board.numPlayer1, pre_Board.numPlayer2)
+        # print("board with numPlayer = ", self.numPlayer1, self.numPlayer2)
         if len(last_move) == 2 and last_move[0] != last_move[1] and pre_Board.numPlayer1 == self.numPlayer1 and pre_Board.numPlayer2 == self.numPlayer2:
             position_open = last_move[0] # vi tri mo ? 
+            # print(position_open)
             canMove = []
             listBay = []
             for row in range(self.n):
@@ -270,11 +278,12 @@ class BoardState:
                             if newrow == position_open[0] and newcol == position_open[1]:
                                 list_pairOtherSide = self.pair_otherCell(newrow, newcol)
                                 for [left, right] in list_pairOtherSide:
+                                    # print("left and right =", left, right)
                                     if left == (row, col) or right == (row, col):
                                         continue
                                     if self.board[left[0]][left[1]] * (-1) == player and self.board[right[0]][right[1]] * (-1) == player:              
                                         listBay.append([row, col, dir])
-                                        print([row, col, dir])
+                                        # print([row, col, dir])
                                         break
                             canMove.append([row, col, dir])
             if len(listBay) > 0:
@@ -309,10 +318,13 @@ class BoardState:
         for row in self.board:
             rowLine = '|'
             for col in row:
-                if (col == -1):
-                    rowLine = rowLine + ' ' + col.__str__() + ' |'
-                else:
-                    rowLine = rowLine + '  ' + col.__str__() + ' |'
+                if col == -1:
+                    col = 'O'
+                if col == 0:
+                    col = '-'
+                if col == 1:
+                    col = 'X'
+                rowLine = rowLine + ' ' + col.__str__() + ' |'
             lines.append(rowLine)
             lines.append(horizontalLine)
         return '\n'.join(lines)

@@ -13,13 +13,13 @@ LIMITS_DEPTH = 6
 class Player:
     def __init__(self, str_name = "me"):
         if str_name == "me":
-            self.player = 1 # Me
+            self.player = ME # Me
         else:
-            self.plyer = -1 # Teacher
+            self.plyer = TEACHER # Teacher
         self.preBoard = BoardState()
     
     def __str__(self):
-        return self.name
+        return self.player
 
     def move(self, board, player):
         _boardSate = BoardState(board)
@@ -31,12 +31,10 @@ class Player:
         
         row, col, dir = best_move[0], best_move[1], best_move[2]
         (newrow, newcol) = _boardSate.updateCell(row, col, dir)
-        self.preBoard = BoardState([[0 for j in range(_boardSate.n)] for i in range(_boardSate.n)], _boardSate.n)
-        self.preBoard.board = [values[:] for values in _boardSate.board]
 
         start = (row, col)
         end = (newrow, newcol)
-        self.preBoard = self.preBoard.change(start, end)
+        self.preBoard = _boardSate.change(start, end)
         return (start, end)
 
     def getlast_move(self, boardState : "BoardState"):
@@ -114,5 +112,5 @@ class Alpha_Beta:
 PLAYER = Player()
 
 def move(board, player):
-    print("preBoard = ", PLAYER.preBoard)
+    # print("preBoard = ", PLAYER.preBoard)
     return PLAYER.move(board, player)

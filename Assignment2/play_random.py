@@ -15,9 +15,9 @@ ME = -1 # Quan X
 class Player_random:    
     def __init__(self, str_name = "me"):
         if str_name == "me":
-            self.player = 1 # Me
+            self.player = ME # Me
         else:
-            self.plyer = -1 # Teacher
+            self.plyer = TEACHER # Teacher
         self.preBoard = BoardState()
     
     def __str__(self):
@@ -32,12 +32,10 @@ class Player_random:
         choose = random.choice(move)
         row, col, dir = choose[0], choose[1], choose[2]
         (newrow, newcol) = _boardSate.updateCell(row, col, dir)
-        self.preBoard = BoardState([[0 for j in range(_boardSate.n)] for i in range(_boardSate.n)], _boardSate.n)
-        self.preBoard.board = [values[:] for values in _boardSate.board]
 
         start = (row, col)
         end = (newrow, newcol)
-        self.preBoard = self.preBoard.change(start, end)
+        self.preBoard = _boardSate.change(start, end)
         return (start, end)
 
     def getlast_move(self, boardState : "BoardState"):
@@ -55,4 +53,5 @@ PLAYER = Player_random("me")
 
 def move_random(board, player):
     print("preBoard = ", PLAYER.preBoard)
+    print("board = ", BoardState(board))
     return PLAYER.move(board, player)
