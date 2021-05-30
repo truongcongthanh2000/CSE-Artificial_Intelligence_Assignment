@@ -97,13 +97,11 @@ class Alpha_Beta:
             return bestValue
         else:
             bestValue = INF
-            choost = []
             for [row, col, dir] in moves:
                 newBoard = board.result(row, col, dir)
                 value = self.alpha_beta(depth - 1, newBoard, True, alpha, beta, player * (-1), board, last_move)
                 if value < bestValue:
                     bestValue = value
-                    choose = [row, col, dir]
                 beta = min(alpha, bestValue)
                 if beta <= alpha or self.TLE():
                     break
