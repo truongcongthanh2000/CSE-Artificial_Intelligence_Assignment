@@ -65,7 +65,7 @@ class Alpha_Beta:
         beta = INF
         best_move = []
         depth = 1
-        while not self.TLE():
+        while not self.TLE() and depth <= LIMITS_DEPTH:
             for [row, col, dir] in moves:
                 newBoard = board.result(row, col, dir)
                 value = self.alpha_beta(depth - 1, newBoard, False, alpha, beta, player * (-1), board, last_move)

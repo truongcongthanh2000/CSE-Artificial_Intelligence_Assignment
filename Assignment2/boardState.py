@@ -192,7 +192,7 @@ class BoardState:
         newBoard.board[newrow][newcol] = self.board[row][col]
         
         newBoard.ganh(newrow, newcol)
-        # newBoard.chet(newrow, newcol)
+        newBoard.chet(newrow, newcol)
         return newBoard
 
     def updateCell(self, row, col, move):

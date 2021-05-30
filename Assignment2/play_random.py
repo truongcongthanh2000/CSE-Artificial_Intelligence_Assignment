@@ -52,6 +52,6 @@ class Player_random:
 PLAYER = Player_random("me")
 
 def move_random(board, player):
-    print("preBoard = ", PLAYER.preBoard)
-    print("board = ", BoardState(board))
+    # print("preBoard = ", PLAYER.preBoard)
+    # print("board = ", BoardState(board))
     return PLAYER.move(board, player)
