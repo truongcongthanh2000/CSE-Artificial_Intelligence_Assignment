@@ -68,7 +68,8 @@ class Alpha_Beta:
         while not self.TLE() and depth <= LIMITS_DEPTH:
             for [row, col, dir] in moves:
                 newBoard = board.result(row, col, dir)
-                value = self.alpha_beta(depth - 1, newBoard, False, alpha, beta, player * (-1), board, last_move)
+                (newrow, newcol) = board.updateCell(row, col, dir)
+                value = self.alpha_beta(depth - 1, newBoard, False, alpha, beta, player * (-1), board, ((row, col), (newrow, newcol)))
                 if value > alpha:
                     alpha = value
                     best_move.clear()
@@ -88,7 +89,8 @@ class Alpha_Beta:
             bestValue = -INF
             for [row, col, dir] in moves:
                 newBoard = board.result(row, col, dir)
-                value = self.alpha_beta(depth - 1, newBoard, False, alpha, beta, player * (-1), board, last_move)
+                (newrow, newcol) = board.updateCell(row, col, dir)
+                value = self.alpha_beta(depth - 1, newBoard, False, alpha, beta, player * (-1), board, ((row, col), (newrow, newcol)))
                 if value > bestValue:
                     bestValue = value
                 alpha = max(alpha, bestValue)
@@ -99,7 +101,8 @@ class Alpha_Beta:
             bestValue = INF
             for [row, col, dir] in moves:
                 newBoard = board.result(row, col, dir)
-                value = self.alpha_beta(depth - 1, newBoard, True, alpha, beta, player * (-1), board, last_move)
+                (newrow, newcol) = board.updateCell(row, col, dir)
+                value = self.alpha_beta(depth - 1, newBoard, True, alpha, beta, player * (-1), board, ((row, col), (newrow, newcol)))
                 if value < bestValue:
                     bestValue = value
                 beta = min(beta, bestValue)
